@@ -1,0 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+    /* Dark theme colors based on design spec */
+    --background: 0.09 0.005 240;
+    --foreground: 0.96 0.005 240;
+    --card: 0.13 0.007 240;
+    --card-foreground: 0.96 0.005 240;
+    --popover: 0.15 0.007 240;
+    --popover-foreground: 0.96 0.005 240;
+    --primary: 0.56 0.22 260;
+    --primary-foreground: 0.98 0 0;
+    --secondary: 0.17 0.008 240;
+    --secondary-foreground: 0.96 0.005 240;
+    --muted: 0.17 0.008 240;
+    --muted-foreground: 0.55 0.01 240;
+    --accent: 0.22 0.008 240;
+    --accent-foreground: 0.96 0.005 240;
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.98 0 0;
+    --border: 0.22 0.01 240;
+    --input: 0.22 0.008 240;
+    --ring: 0.56 0.22 260;
+    --brand-orange: 0.73 0.18 50;
+    --chart-1: 0.56 0.22 260;
+    --chart-2: 0.73 0.18 50;
+    --chart-3: 0.65 0.2 145;
+    --chart-4: 0.62 0.22 310;
+    --chart-5: 0.68 0.18 55;
+    --sidebar: 0.13 0.007 240;
+    --sidebar-foreground: 0.96 0.005 240;
+    --sidebar-primary: 0.56 0.22 260;
+    --sidebar-primary-foreground: 0.98 0 0;
+    --sidebar-accent: 0.17 0.008 240;
+    --sidebar-accent-foreground: 0.96 0.005 240;
+    --sidebar-border: 0.22 0.01 240;
+    --sidebar-ring: 0.56 0.22 260;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .text-brand-orange {
+    color: oklch(var(--brand-orange));
+  }
+  .bg-brand-orange {
+    background-color: oklch(var(--brand-orange));
+  }
+  .border-brand-orange {
+    border-color: oklch(var(--brand-orange));
+  }
+  .gradient-hero {
+    background: linear-gradient(
+      to right,
+      oklch(0.09 0.005 240 / 0.95) 30%,
+      oklch(0.09 0.005 240 / 0.5) 70%,
+      transparent 100%
+    );
+  }
+  .card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px oklch(0.56 0.22 260 / 0.15);
+  }
+}
