@@ -6,8 +6,6 @@ import Runtime "mo:core/Runtime";
 import Time "mo:core/Time";
 import Nat "mo:core/Nat";
 import Principal "mo:core/Principal";
-import Iter "mo:core/Iter";
-import Array "mo:core/Array";
 import Int "mo:core/Int";
 import Order "mo:core/Order";
 
@@ -56,12 +54,10 @@ actor {
     imageUrl : Text;
   };
 
-  module Event {
-    public func compareByName(event1 : Event, event2 : Event) : Order.Order {
-      switch (Text.compare(event1.name, event2.name)) {
-        case (#equal) { Int.compare(event1.dateTime, event2.dateTime) };
-        case (order) { order };
-      };
+  func compareEventsByName(event1 : Event, event2 : Event) : Order.Order {
+    switch (Text.compare(event1.name, event2.name)) {
+      case (#equal) { Int.compare(event1.dateTime, event2.dateTime) };
+      case (order) { order };
     };
   };
 
@@ -74,10 +70,8 @@ actor {
     status : Text;
   };
 
-  module Booking {
-    public func compare(booking1 : Booking, booking2 : Booking) : Order.Order {
-      Int.compare(booking1.bookedAt, booking2.bookedAt);
-    };
+  func compareBookings(booking1 : Booking, booking2 : Booking) : Order.Order {
+    Int.compare(booking1.bookedAt, booking2.bookedAt);
   };
 
   let events = Map.empty<Nat, Event>();
@@ -153,14 +147,14 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view their bookings");
     };
-    bookings.values().toArray().filter(func(b) { b.userId == caller });
+    bookings.values().toArray().filter(func(b : Booking) : Bool { b.userId == caller });
   };
 
-  public query ({ caller }) func getAllEvents() : async [Event] {
-    events.values().toArray().sort(Event.compareByName);
+  public query func getAllEvents() : async [Event] {
+    events.values().toArray().sort(compareEventsByName);
   };
 
-  public query ({ caller }) func getEventById(eventId : Nat) : async Event {
+  public query func getEventById(eventId : Nat) : async Event {
     switch (events.get(eventId)) {
       case (null) { Runtime.trap("Event not found") };
       case (?event) { event };
@@ -171,7 +165,7 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can view all bookings");
     };
-    bookings.values().toArray().sort();
+    bookings.values().toArray().sort(compareBookings);
   };
 
   public shared ({ caller }) func cancelBooking(bookingId : Nat) : async () {
@@ -201,6 +195,9 @@ actor {
         status = "cancelled";
       },
     );
+    let newBookedSeats : Nat = if (event.bookedSeats >= booking.quantity) {
+      event.bookedSeats - booking.quantity;
+    } else { 0 };
     events.add(
       booking.eventId,
       {
@@ -210,7 +207,7 @@ actor {
         dateTime = event.dateTime;
         venue = event.venue;
         totalSeats = event.totalSeats;
-        bookedSeats = event.bookedSeats - booking.quantity;
+        bookedSeats = newBookedSeats;
         price = event.price;
         category = event.category;
         isFeatured = event.isFeatured;

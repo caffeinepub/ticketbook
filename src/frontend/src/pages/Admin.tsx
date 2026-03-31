@@ -26,6 +26,7 @@ import {
   Plus,
   RefreshCw,
   ShieldAlert,
+  Sparkles,
   Star,
   StarOff,
 } from "lucide-react";
@@ -43,13 +44,22 @@ import {
   useSetFeatured,
 } from "../hooks/useQueries";
 
-const CATEGORIES = ["Music", "Sports", "Arts", "Family", "Festivals"];
+const CATEGORIES = [
+  "Action",
+  "Drama",
+  "Comedy",
+  "Sci-Fi",
+  "Thriller",
+  "Romance",
+  "Bollywood",
+  "Regional",
+];
 
 const defaultForm = {
   name: "",
   description: "",
   venue: "",
-  category: "Music",
+  category: "Action",
   price: "",
   dateTime: "",
   totalSeats: "",
@@ -70,9 +80,12 @@ export function Admin() {
   const setFeatured = useSetFeatured();
   const [form, setForm] = useState(defaultForm);
   const [tab, setTab] = useState("create");
+  const [seeding, setSeeding] = useState(false);
 
   const allEvents: Event[] =
     backendEvents && backendEvents.length > 0 ? backendEvents : sampleEvents;
+
+  const showSeedButton = !backendEvents || backendEvents.length === 0;
 
   if (!identity) {
     return (
@@ -163,6 +176,21 @@ export function Admin() {
       setTab("events");
     } catch {
       toast.error("Failed to create event.");
+    }
+  };
+
+  const handleSeedMovies = async () => {
+    setSeeding(true);
+    try {
+      for (const movie of sampleEvents) {
+        await createEvent.mutateAsync({ ...movie, id: BigInt(0) });
+      }
+      toast.success("8 sample movies seeded!");
+      setTab("events");
+    } catch {
+      toast.error("Failed to seed movies.");
+    } finally {
+      setSeeding(false);
     }
   };
 
@@ -315,14 +343,14 @@ export function Admin() {
                       htmlFor="price"
                       className="text-xs font-semibold text-muted-foreground mb-1.5 block"
                     >
-                      Ticket Price ($) *
+                      Ticket Price (₹) *
                     </Label>
                     <Input
                       id="price"
                       type="number"
                       min="0"
                       step="0.01"
-                      placeholder="e.g. 99.99"
+                      placeholder="e.g. 299"
                       value={form.price}
                       onChange={(e) =>
                         setForm((f) => ({ ...f, price: e.target.value }))
@@ -391,7 +419,7 @@ export function Admin() {
                 <Button
                   type="submit"
                   className="w-full h-11 bg-primary hover:bg-primary/90 font-semibold"
-                  disabled={createEvent.isPending}
+                  disabled={createEvent.isPending || seeding}
                   data-ocid="admin.submit_button"
                 >
                   {createEvent.isPending ? (
@@ -404,6 +432,35 @@ export function Admin() {
                   )}
                 </Button>
               </form>
+
+              {showSeedButton && (
+                <div className="mt-6 pt-6 border-t border-border">
+                  <p className="text-xs text-muted-foreground mb-3">
+                    No movies in the database yet. Seed 8 sample Indian movies
+                    to get started.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full h-10 border-primary/40 text-primary hover:bg-primary/10 font-semibold"
+                    disabled={seeding || createEvent.isPending}
+                    onClick={handleSeedMovies}
+                    data-ocid="admin.primary_button"
+                  >
+                    {seeding ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Seeding movies...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Seed Movies
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           </motion.div>
         </TabsContent>
@@ -462,7 +519,7 @@ export function Admin() {
                           {Number(event.bookedSeats)}/{Number(event.totalSeats)}
                         </TableCell>
                         <TableCell className="text-sm font-semibold text-foreground">
-                          ${event.price.toFixed(2)}
+                          ₹{event.price.toFixed(0)}
                         </TableCell>
                         <TableCell>
                           <Button

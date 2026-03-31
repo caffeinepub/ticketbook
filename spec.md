@@ -1,38 +1,23 @@
-# TicketBook - Indian Movie Ticket Booking
+# CineBook - Indian Movie Ticket Booking
 
 ## Current State
-A generic event ticket booking app with US-centric sample data (concerts, marathons, sports), USD pricing, US venues, and categories like Music/Sports/Arts/Family/Festivals.
+Fully wired app: Motoko backend with events/bookings/admin APIs, React frontend using backend hooks with sampleEvents as fallback. Backend has authorization, createEvent, bookTickets, cancelBooking, getAllEvents, getMyBookings, getAllBookings, markEventAsFeatured.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Indian movie categories: Bollywood, South Indian, Hindi, Tamil, Telugu, Action, Drama, Comedy, Romance, Thriller
-- INR (₹) currency formatting throughout
-- Indian multiplex venues: PVR, INOX, Cinepolis, Miraj, Carnival Cinemas across major Indian cities (Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Kolkata, Pune)
-- Sample Indian movies (current + upcoming Bollywood/regional hits) with Indian context
-- Language filter for movies (Hindi, Tamil, Telugu, Malayalam, Kannada)
-- Seat class options: Gold, Diamond, Platinum (common Indian multiplex categories)
+- Nothing new
 
 ### Modify
-- sampleEvents.ts: Replace all US events with Indian movie listings
-- Home.tsx: Update hero text for Indian movie context, categories to movie genres, location dropdown with Indian cities
-- EventCard.tsx: Show movie language badge, format price in ₹
-- EventDetail.tsx: Movie-specific details (language, genre, duration, cast), seat class selection
-- Events.tsx: Update filter categories to movie genres and languages
-- Navbar.tsx: Update branding to CineBook India or keep TicketBook
-- Footer.tsx: Update to Indian context
-- All currency displays: USD → INR (₹)
+- Admin form: replace generic categories [Music, Sports, Arts, Family, Festivals] with movie genres [Action, Drama, Comedy, Sci-Fi, Thriller, Romance, Bollywood, Regional]
+- Admin form: change price label from "$" to "₹"
+- Admin form: seed data button to populate backend with sample Indian movies on first login
 
 ### Remove
-- US city location options from search
-- Non-movie categories (Music, Sports, Arts, Family, Festivals)
+- Nothing
 
 ## Implementation Plan
-1. Update sampleEvents.ts with 8+ Indian movies across genres and cities
-2. Update currency formatting helpers to use INR (₹)
-3. Update Home.tsx hero section with Indian cities, movie genre categories
-4. Update EventCard.tsx for movie context (language, ₹ pricing)
-5. Update EventDetail.tsx for movie booking (language, seat class, duration)
-6. Update Events.tsx with movie genre/language filters
-7. Update Navbar/Footer for Indian movie booking context
-8. Generate new hero image for Indian cinema theme
+1. Fix Admin.tsx CATEGORIES array to use movie genres
+2. Fix price label to show ₹
+3. Add a "Seed Sample Data" button in admin that calls createEvent for sampleEvents when backend is empty
+4. Validate and deploy
